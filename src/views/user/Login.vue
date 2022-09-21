@@ -12,7 +12,7 @@
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
         @change="handleTabClick"
       >
-        <a-tab-pane key="tab1" :tab="'账户密码登录'">
+        <a-tab-pane key="tab1" :tab="'密码登录'">
           <a-form-item>
             <a-input size="large" type="text" :placeholder="'手机号'" v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: $t('user.login.mobile.placeholder') }], validateTrigger: 'change'}]">
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -31,16 +31,16 @@
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input-password>
           </a-form-item>
-          <a-form-item>
+          <!-- <a-form-item>
             <a-input
               size="large"
               :placeholder="UObject ? 'U盾检测成功': 'U盾状态'"
               disabled
             >
             </a-input>
-          </a-form-item>
+          </a-form-item> -->
         </a-tab-pane>
-        <a-tab-pane key="tab2" :tab="'手机号登录'">
+        <a-tab-pane key="tab2" :tab="'验证码登录'">
           <a-form-item>
             <a-input size="large" type="text" :placeholder="'手机号'" v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: $t('user.login.mobile.placeholder') }], validateTrigger: 'change'}]">
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -67,7 +67,14 @@
           </a-row>
         </a-tab-pane>
       </a-tabs>
-
+       <a-form-item>
+            <a-input
+              size="large"
+              :placeholder="UObject ? 'U盾检测成功': 'U盾状态'"
+              disabled
+            >
+            </a-input>
+          </a-form-item>
       <div id='captcha'></div>
       <a-form-item style="margin-top:24px">
         <a-button
