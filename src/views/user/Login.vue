@@ -7,15 +7,15 @@
       :form="form"
       @submit="handleSubmit"
     >
-      <a-tabs
+      <!-- <a-tabs
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
         @change="handleTabClick"
-      >
-        <a-tab-pane key="tab1" :tab="'密码登录'">
+      > -->
+        <!-- <a-tab-pane key="tab1" :tab="'密码登录'"> -->
           <a-form-item>
-            <a-input size="large" type="text" :placeholder="'手机号'" v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: $t('user.login.mobile.placeholder') }], validateTrigger: 'change'}]">
-              <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+            <a-input size="large" type="text" :placeholder="'登录名'" v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]">
+              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
 
@@ -31,16 +31,12 @@
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input-password>
           </a-form-item>
-          <!-- <a-form-item>
-            <a-input
-              size="large"
-              :placeholder="UObject ? 'U盾检测成功': 'U盾状态'"
-              disabled
-            >
+          <a-form-item>
+            <a-input size="large" type="text" :placeholder="'uscc'" v-decorator="['uscc', {rules: [{ required: true, message: '请输入uscc'}], validateTrigger: 'blur'}]">
             </a-input>
-          </a-form-item> -->
-        </a-tab-pane>
-        <a-tab-pane key="tab2" :tab="'验证码登录'">
+          </a-form-item>
+        <!-- </a-tab-pane> -->
+        <!-- <a-tab-pane key="tab2" :tab="'验证码登录'">
           <a-form-item>
             <a-input size="large" type="text" :placeholder="'手机号'" v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: $t('user.login.mobile.placeholder') }], validateTrigger: 'change'}]">
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -66,7 +62,7 @@
             </a-col>
           </a-row>
         </a-tab-pane>
-      </a-tabs>
+      </a-tabs> -->
        <a-form-item>
             <a-input
               size="large"
@@ -87,20 +83,12 @@
         >登录</a-button>
       </a-form-item>
     </a-form>
-
-    <two-step-captcha
-      v-if="requiredTwoStepCaptcha"
-      :visible="stepCaptchaVisible"
-      @success="stepCaptchaSuccess"
-      @cancel="stepCaptchaCancel"
-    ></two-step-captcha>
   </div>
 </template>
 
 <script>
 // import md5 from 'md5'
 import { Modal } from 'ant-design-vue'
-import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login'
@@ -108,7 +96,6 @@ import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login
 let gt
 export default {
   components: {
-    TwoStepCaptcha
   },
   data () {
     return {
@@ -131,46 +118,38 @@ export default {
     }
   },
   created () {
-    get2step({ })
-      .then(res => {
-        this.requiredTwoStepCaptcha = res.result.stepCode
-      })
-      .catch(() => {
-        this.requiredTwoStepCaptcha = false
-      })
-    // this.requiredTwoStepCaptcha = true
-    initGeetest4({
-      captchaId: '6bd3a0e254936eec9549f95c1d45fde9',
-      product: 'bind'
-    }, (captcha) => {
-      gt = captcha
-      captcha.onSuccess(() => {
-      var result = captcha.getValidate();
-      console.log(result)
-      const { form: { validateFields }, state } = this
-      state.smsSendBtn = true
-      const interval = window.setInterval(() => {
-        if (state.time-- <= 0) {
-          state.time = 60
-          state.smsSendBtn = false
-          window.clearInterval(interval)
-        }
-      }, 1000)
-      const hide = this.$message.loading('验证码发送中..', 0)
-       validateFields(['mobile'], { force: true }, (err, values) => {
-        getSmsCaptcha({ mobile: values.mobile, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time  }).then(res => {
-          setTimeout(hide, 2500)
-        }).catch(err => {
-          setTimeout(hide, 1)
-          clearInterval(interval)
-          state.time = 60
-          state.smsSendBtn = false
-          this.requestFailed(err)
-        })
-       })
+    // initGeetest4({
+    //   captchaId: '6bd3a0e254936eec9549f95c1d45fde9',
+    //   product: 'bind'
+    // }, (captcha) => {
+    //   gt = captcha
+    //   captcha.onSuccess(() => {
+    //   var result = captcha.getValidate();
+    //   console.log(result)
+    //   const { form: { validateFields }, state } = this
+    //   state.smsSendBtn = true
+    //   const interval = window.setInterval(() => {
+    //     if (state.time-- <= 0) {
+    //       state.time = 60
+    //       state.smsSendBtn = false
+    //       window.clearInterval(interval)
+    //     }
+    //   }, 1000)
+    //   const hide = this.$message.loading('验证码发送中..', 0)
+    //    validateFields(['mobile'], { force: true }, (err, values) => {
+    //     getSmsCaptcha({ mobile: values.mobile, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time  }).then(res => {
+    //       setTimeout(hide, 2500)
+    //     }).catch(err => {
+    //       setTimeout(hide, 1)
+    //       clearInterval(interval)
+    //       state.time = 60
+    //       state.smsSendBtn = false
+    //       this.requestFailed(err)
+    //     })
+    //    })
       
-    });
-    })
+    // });
+    // })
   },
   mounted () {
     this.checkUStatus()
@@ -192,7 +171,7 @@ export default {
 
       state.loginBtn = true
 
-      const validateFieldsKey = customActiveKey === 'tab1' ? ['mobile', 'password'] : ['mobile', 'captcha']
+      const validateFieldsKey = ['loginName', 'password', 'uscc']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
@@ -202,10 +181,12 @@ export default {
           // loginParams[!state.loginType ? 'email' : 'username'] = values.username
           loginParams.password = (values.password)
           console.log(loginParams)
+          // loginParams.uscc = this.UObject.uscc
           loginParams.subject = this.UObject.subject
           loginParams.cfcaKeyId = this.UObject.cfcaKeyId
           loginParams.sign = this.UObject.sign
-          checkCfcaKey(loginParams.mobile).then(result => {
+          console.log(123)
+          checkCfcaKey(loginParams.loginName, loginParams.uscc).then(result => {
             if (result.data === 1) {
                this.goLogin(loginParams)
             } else {
@@ -310,6 +291,7 @@ export default {
     // 检测u盾状态
     checkUStatus() {
       this.UObject = {
+        uscc: '',
         subject: '',
         cfcaKeyId: '',
         sign: ''

@@ -12,7 +12,7 @@ import { checkIsLogin, checkCfcaKey } from '@/api/login'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const allowList = ['login'] // no redirect allowList
-const loginRoutePath = '/user/login'
+const loginRoutePath = '/login'
 const defaultRoutePath = '/'
 
 router.beforeEach((to, from, next) => {

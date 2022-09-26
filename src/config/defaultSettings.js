@@ -23,7 +23,7 @@ export default {
   menu: {
     locale: true
   },
-  title: '统一登录中心',
+  title: '雄安新区建设项目资金管理区块链信息系统--统一登录平台',
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'

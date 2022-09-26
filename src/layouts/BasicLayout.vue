@@ -15,7 +15,8 @@
     <template v-slot:menuHeaderRender>
       <div>
         <logo-svg />
-        <h1>{{ title }}</h1>
+        <h1 >{{ '统一登录平台' }}</h1>
+        <!-- <div class="title">雄安新区建设项目资金管理区块链信息系统--统一登录平台</div> -->
       </div>
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
@@ -171,4 +172,14 @@ export default {
 
 <style lang="less">
 @import "./BasicLayout.less";
+// .ant-pro-sider-menu-logo {
+//   height: 64px;
+//   line-height: 1;
+//   padding-left: 0px;
+//   .title {
+//     margin-top: 12px;
+//     text-align: center;
+//     line-height: 1.2;
+//   }
+// }
 </style>

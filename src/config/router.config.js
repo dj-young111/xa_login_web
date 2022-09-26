@@ -90,31 +90,31 @@ export const constantRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: 'menu.home' },
-    redirect: '/clients/list',
+    redirect: '/index',
     children: [
       // Exception
       {
         path: '/clients',
         name: 'clients',
         component: RouteView,
-        redirect: '/exception/403',
+        redirect: '/index',
         meta: { title: '个人中心', icon: 'table' },
         children: [
           {
-            path: '/clients/list',
-            name: 'list',
+            path: '/index',
+            name: 'index',
             component: () => import(/* webpackChunkName: "fail" */ '@/views/clients/TableList'),
             meta: { title: '客户端列表' }
           },
           {
-            path: '/clients/modifyPhone',
-            name: 'modifyPhone',
+            path: '/mobile',
+            name: 'mobile',
             component: () => import(/* webpackChunkName: "fail" */ '@/views/user/modifyPhone'),
             meta: { title: '修改手机号' }
           },
           {
-            path: '/clients/modifyPassword',
-            name: 'modifyPassword',
+            path: '/pwd',
+            name: 'pwd',
             component: () => import(/* webpackChunkName: "fail" */ '@/views/user/modifyPassword'),
             meta: { title: '修改密码' }
           }
@@ -125,11 +125,11 @@ export const constantRouterMap = [
   {
     path: '/user',
     component: UserLayout,
-    redirect: '/user/login',
+    redirect: '/login',
     hidden: true,
     children: [
       {
-        path: 'login',
+        path: '/login',
         name: 'login',
         component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
       },

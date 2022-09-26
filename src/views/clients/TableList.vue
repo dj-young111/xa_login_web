@@ -11,11 +11,11 @@
         :dataSource="data"
         :pagination='false'
       >
-        <span slot="serial" slot-scope="text, record, index">
+        <!-- <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
-        </span>
-        <span slot="website" slot-scope="text">
-          <a :href="text" target="_blank">点击跳转</a>
+        </span> -->
+        <span slot="website" slot-scope="text, record">
+          <a  @click="goRedirect(text)"><img :src="record.icon" alt="" class="img"></a>
         </span>
       </a-table>
     </a-card>
@@ -25,25 +25,25 @@
 <script>
 import { STable } from '@/components'
 import { getClients } from '@/api/clients'
-
+import {checkIsLogin} from '@/api/login'
 const columns = [
-  {
-    title: '#',
-    scopedSlots: { customRender: 'serial' }
-  },
+  // {
+  //   title: '#',
+  //   scopedSlots: { customRender: 'serial' }
+  // },
   {
     title: '客户端名称',
     dataIndex: 'clientName'
   },
-  {
-    title: '客户端编码',
-    dataIndex: 'clientCode',
-    scopedSlots: { customRender: 'description' }
-  },
-  {
-    title: '私钥',
-    dataIndex: 'secretKey'
-  },
+  // {
+  //   title: '客户端编码',
+  //   dataIndex: 'clientCode',
+  //   scopedSlots: { customRender: 'description' }
+  // },
+  // {
+  //   title: '私钥',
+  //   dataIndex: 'secretKey'
+  // },
   {
     title: '网址',
     dataIndex: 'website',
@@ -80,7 +80,25 @@ export default {
       }
     }
   },
-  methods: {
-  }
+   methods: {
+    goRedirect(text) {
+      checkIsLogin({redirect:text}).then(res => {
+          console.log(res)
+          if (res.data) {
+            location.href = decodeURIComponent(res.data)
+          } else {
+            this.$message.error({
+              message: res.msg,
+            })
+          }
+        })
+    }
+  },
 }
 </script>
+<style lang="less" scoped>
+.img {
+  width: 160px;
+  height: 60px;
+}
+</style>

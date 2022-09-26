@@ -8,7 +8,7 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 // 创建 axios 实例
 const request = axios.create({
   // API 请求的默认前缀
-  baseURL: 'http://120.53.124.140:8011', // process.env.VUE_APP_API_BASE_URL,
+  baseURL: 'http://120.53.124.140:8001', // process.env.VUE_APP_API_BASE_URL,
   timeout: 6000 // 请求超时时间
 })
 
@@ -30,11 +30,16 @@ const errorHandler = (error) => {
         description: 'Authorization verification failed'
       })
       if (token) {
-        store.dispatch('Logout').then(() => {
-          setTimeout(() => {
+        // store.dispatch('Logout').then(() => {
+        //   setTimeout(() => {
+        //     window.location.reload()
+        //   }, 1500)
+        // })
+        storage.remove(ACCESS_TOKEN)
+           setTimeout(() => {
             window.location.reload()
           }, 1500)
-        })
+        // })
       }
     }
   }

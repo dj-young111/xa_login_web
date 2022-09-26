@@ -59,7 +59,7 @@ export function getCurrentUserNav () {
 
 export function logout () {
   return request({
-    url: userApi.Logout,
+    url: '/user/logout',
     method: 'post',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -89,9 +89,9 @@ export function checkIsLogin (parameter) {
 }
 
 // 检查是否绑定U盾
-export function checkCfcaKey (mobile) {
+export function checkCfcaKey (loginName, uscc) {
   return request({
-    url: `/user/checkCfcaKey/${mobile}`,
+    url: `/user/checkCfcaKey/${loginName}/${uscc}`,
     method: 'get',
   })
 }
