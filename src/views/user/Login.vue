@@ -99,7 +99,7 @@ import { Modal } from 'ant-design-vue'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login'
-import {checkBrowserUkeyCert, getUkeyInfo} from '@/utils/checkBrowserUkeyCert'
+import {checkBrowserUkeyCert, getUkeyInfo, BrowserInfo} from '@/utils/checkBrowserUkeyCert'
 import nmCryptokit from '@/utils/nmCryptoKit'
 
 
@@ -205,6 +205,7 @@ export default {
             this.UObject = ukeyInfo
             var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc;
             console.log(signSource)
+            var browser = BrowserInfo();
             var CryptoKit = new nmCryptokit(browser.name);
             CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
               var sign = res.result

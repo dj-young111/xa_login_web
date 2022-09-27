@@ -130,7 +130,7 @@ function OnUnLoad() {
     }
 }
 
-function BrowserInfo() {
+export function BrowserInfo() {
     var res = {
         name: "",
         version: "",
