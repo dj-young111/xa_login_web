@@ -99,6 +99,8 @@ import { Modal } from 'ant-design-vue'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login'
+import {checkBrowserUkeyCert, getUkeyInfo} from '@/utils/checkBrowserUkeyCert'
+
 
 let gt
 export default {
@@ -160,6 +162,8 @@ export default {
   },
   mounted () {
     this.checkUStatus()
+    // console.log(nmCryptokit)
+    checkBrowserUkeyCert()
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
@@ -175,12 +179,16 @@ export default {
         customActiveKey,
         Login
       } = this
+      getUkeyInfo().then(res => {
+          console.log(res)
+        })
 
       state.loginBtn = true
 
       const validateFieldsKey = ['loginName', 'password', 'uscc']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
+        
         if (!err) {
           console.log('login form', values)
           const loginParams = { ...values }
