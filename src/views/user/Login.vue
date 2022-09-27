@@ -31,10 +31,10 @@
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input-password>
           </a-form-item>
-          <a-form-item>
+          <!-- <a-form-item>
             <a-input size="large" type="text" :placeholder="'uscc'" v-decorator="['uscc', {rules: [{ required: true, message: '请输入uscc'}], validateTrigger: 'blur'}]">
             </a-input>
-          </a-form-item>
+          </a-form-item> -->
         <!-- </a-tab-pane> -->
         <!-- <a-tab-pane key="tab2" :tab="'验证码登录'">
           <a-form-item>
@@ -66,7 +66,7 @@
        <a-form-item>
             <a-input
               size="large"
-              :placeholder="UObject ? 'U盾检测成功': 'U盾状态'"
+              :placeholder="UObject ? 'U盾检测成功': 'U盾检测中'"
               disabled
             >
             </a-input>
@@ -100,6 +100,7 @@ import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login'
 import {checkBrowserUkeyCert, getUkeyInfo} from '@/utils/checkBrowserUkeyCert'
+import nmCryptokit from '@/utils/nmCryptoKit'
 
 
 let gt
@@ -161,9 +162,15 @@ export default {
     // })
   },
   mounted () {
-    this.checkUStatus()
+    // this.checkUStatus()
     // console.log(nmCryptokit)
     checkBrowserUkeyCert()
+
+    setTimeout(() => {
+      getUkeyInfo().then(ukeyInfo => {
+        this.UObject = ukeyInfo
+      })
+    }, 3000)
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
@@ -179,9 +186,7 @@ export default {
         customActiveKey,
         Login
       } = this
-      getUkeyInfo().then(res => {
-          console.log(res)
-        })
+      
 
       state.loginBtn = true
 
@@ -192,33 +197,42 @@ export default {
         if (!err) {
           console.log('login form', values)
           const loginParams = { ...values }
-          // delete loginParams.username
-          // loginParams[!state.loginType ? 'email' : 'username'] = values.username
+         
           loginParams.password = (values.password)
           console.log(loginParams)
-          // loginParams.uscc = this.UObject.uscc
-          loginParams.subject = this.UObject.subject
-          loginParams.cfcaKeyId = this.UObject.cfcaKeyId
-          loginParams.sign = this.UObject.sign
-          console.log(123)
-          checkCfcaKey(loginParams.loginName, loginParams.uscc).then(result => {
-            if (result.data === 1) {
-               this.goLogin(loginParams)
-            } else {
-              Modal.confirm({
-                title: '信息',
-                content: '确认绑定U盾并登录吗',
-                okText: '确认',
-                cancelText: '取消',
-                onOk: () => {
-                  this.goLogin(loginParams)
-                },
-                onCancel () {
-                  state.loginBtn = false
-                }
+          getUkeyInfo().then(ukeyInfo => {
+            console.log(ukeyInfo)
+            this.UObject = ukeyInfo
+            var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc;
+            console.log(signSource)
+            var CryptoKit = new nmCryptokit(browser.name);
+            CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
+              var sign = res.result
+              loginParams.subject =  this.UObject.subject
+              loginParams.cfcaKeyId =  this.UObject.cfcaKeyId
+              loginParams.sign = sign
+            checkCfcaKey(loginParams.loginName,  this.UObject.uscc).then(result => {
+              if (result.data === 1) {
+                this.goLogin(loginParams)
+              } else {
+                Modal.confirm({
+                  title: '信息',
+                  content: '确认绑定U盾并登录吗',
+                  okText: '确认',
+                  cancelText: '取消',
+                  onOk: () => {
+                    this.goLogin(loginParams)
+                  },
+                  onCancel () {
+                    state.loginBtn = false
+                  }
+                })
+              }
+            })
               })
-            }
-          })
+            })
+          // loginParams.uscc = this.UObject.uscc
+          
          
         } else {
           setTimeout(() => {

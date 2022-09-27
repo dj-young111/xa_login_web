@@ -116,7 +116,7 @@ export function getUkeyInfo() {
                     alert("未检测到有效证书");
                 }
             }
-            alert(res.result)
+            // alert(res.result)
         });
 }
 
