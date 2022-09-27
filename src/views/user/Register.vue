@@ -52,7 +52,7 @@
       </a-form-item>
 
       <a-form-item>
-        <a-input size="large" :placeholder="$t('user.login.mobile.placeholder')">
+        <a-input size="large" :placeholder="$t('user.login.mobile.placeholder')" v-model="phone" disabled>
         </a-input>
       </a-form-item>
       <!--<a-input-group size="large" compact>
@@ -153,7 +153,8 @@ export default {
         progressColor: '#FF0000'
       },
       registerBtn: false,
-      UObject: {}
+      UObject: {},
+      phone: ''
     }
   },
   computed: {
@@ -191,6 +192,11 @@ export default {
             const hide = $message.loading('验证码发送中..', 0)
             getSmsCaptcha({loginName: values.loginName, uscc: this.UObject.uscc, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(res => {
               setTimeout(hide, 2500)
+              if (res.status === 1) {
+                this.phone = res.data
+              } else {
+                this.$message.error(res.message, 1)
+              }
             }).catch(err => {
               console.log(err)
               setTimeout(hide, 1)
