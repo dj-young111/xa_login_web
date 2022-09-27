@@ -72,6 +72,13 @@
             </a-input>
           </a-form-item>
       <div id='captcha'></div>
+      <!-- <a-form-item>
+        <router-link
+          :to="{ name: 'pwd' }"
+          class="forge-password"
+          style="float: right;"
+        >忘记密码</router-link>
+      </a-form-item> -->
       <a-form-item style="margin-top:24px">
         <a-button
           size="large"

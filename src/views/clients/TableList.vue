@@ -11,9 +11,9 @@
         :dataSource="data"
         :pagination='false'
       >
-        <!-- <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span> -->
+        <span slot="clientName" slot-scope="text, record"  @click="goRedirect(record.website)" style="cursor: pointer">
+          {{ text }}
+        </span>
         <span slot="website" slot-scope="text, record">
           <a  @click="goRedirect(text)"><img :src="record.icon" alt="" class="img"></a>
         </span>
@@ -33,7 +33,8 @@ const columns = [
   // },
   {
     title: '客户端名称',
-    dataIndex: 'clientName'
+    dataIndex: 'clientName',
+    scopedSlots: { customRender: 'clientName' }
   },
   // {
   //   title: '客户端编码',
