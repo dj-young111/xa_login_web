@@ -34,3 +34,11 @@ export function putModifyPhone (data) {
       data
     })
 }
+
+export function putResetPwd (data) {
+  return request({
+    url: '/user/resetPwd',
+    method: 'put',
+    data
+  })
+}

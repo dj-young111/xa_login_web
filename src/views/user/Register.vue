@@ -1,16 +1,23 @@
 <template>
   <div class="main user-layout-register">
-    <h3><span>{{ $t('user.register.register') }}</span></h3>
+    <h3><span>忘记密码</span></h3>
     <a-form ref="formRegister" :form="form" id="formRegister">
       <a-form-item>
         <a-input
           size="large"
           type="text"
-          :placeholder="$t('user.register.email.placeholder')"
-          v-decorator="['email', {rules: [{ required: true, type: 'email', message: $t('user.email.required') }], validateTrigger: ['change', 'blur']}]"
+          :placeholder="'登录名'"
+          v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]"
         ></a-input>
       </a-form-item>
-
+       <a-form-item>
+        <a-input
+          size="large"
+          :placeholder="UObject.cfcaKeyId ? 'U盾检测成功': 'U盾检测中'"
+          disabled
+        >
+        </a-input>
+      </a-form-item>
       <a-popover
         placement="rightTop"
         :trigger="['focus']"
@@ -45,11 +52,7 @@
       </a-form-item>
 
       <a-form-item>
-        <a-input size="large" :placeholder="$t('user.login.mobile.placeholder')" v-decorator="['mobile', {rules: [{ required: true, message: $t('user.phone-number.required'), pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
-          <a-select slot="addonBefore" size="large" defaultValue="+86">
-            <a-select-option value="+86">+86</a-select-option>
-            <a-select-option value="+87">+87</a-select-option>
-          </a-select>
+        <a-input size="large" :placeholder="$t('user.login.mobile.placeholder')">
         </a-input>
       </a-form-item>
       <!--<a-input-group size="large" compact>
@@ -79,16 +82,25 @@
       </a-row>
 
       <a-form-item>
-        <a-button
+        <div class="btns">
+          <a-button
           size="large"
           type="primary"
           htmlType="submit"
           class="register-button"
           :loading="registerBtn"
           @click.stop.prevent="handleSubmit"
-          :disabled="registerBtn">{{ $t('user.register.register') }}
+          :disabled="registerBtn">确定
         </a-button>
-        <router-link class="login" :to="{ name: 'login' }">{{ $t('user.register.sign-in') }}</router-link>
+        <a-button
+          size="large"
+          class="register-button"
+          @click="gologin"
+          >取消
+        </a-button>
+        </div>
+        
+        <!-- <router-link class="login" :to="{ name: 'login' }">取消</router-link> -->
       </a-form-item>
 
     </a-form>
@@ -99,6 +111,9 @@
 import { getSmsCaptcha } from '@/api/login'
 import { deviceMixin } from '@/store/device-mixin'
 import { scorePassword } from '@/utils/util'
+import {checkBrowserUkeyCert, getUkeyInfo, BrowserInfo} from '@/utils/checkBrowserUkeyCert'
+import nmCryptokit from '@/utils/nmCryptoKit'
+import {putResetPwd} from '@/api/clients'
 
 const levelNames = {
   0: 'user.password.strength.short',
@@ -118,6 +133,7 @@ const levelColor = {
   2: '#ff7e05',
   3: '#52c41a'
 }
+let gt
 export default {
   name: 'Register',
   components: {
@@ -136,7 +152,8 @@ export default {
         percent: 10,
         progressColor: '#FF0000'
       },
-      registerBtn: false
+      registerBtn: false,
+      UObject: {}
     }
   },
   computed: {
@@ -150,7 +167,62 @@ export default {
       return levelColor[this.state.passwordLevel]
     }
   },
+   created () {
+    initGeetest4({
+      captchaId: '6bd3a0e254936eec9549f95c1d45fde9',
+      product: 'bind'
+    }, (captchaObj) => {
+      gt = captchaObj
+      captchaObj.onSuccess( () => {
+        var result = captchaObj.getValidate();
+        console.log(result)
+        this.captchaResult = result
+        const { form: { validateFields }, state, $message } = this
+        validateFields(['loginName'], { force: true },
+        (err, values) => {
+           state.smsSendBtn = true
+            const interval = window.setInterval(() => {
+              if (state.time-- <= 0) {
+                state.time = 60
+                state.smsSendBtn = false
+                window.clearInterval(interval)
+              }
+            }, 1000)
+            const hide = $message.loading('验证码发送中..', 0)
+            getSmsCaptcha({loginName: values.loginName, uscc: this.UObject.uscc, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(res => {
+              setTimeout(hide, 2500)
+            }).catch(err => {
+              console.log(err)
+              setTimeout(hide, 1)
+              clearInterval(interval)
+              state.time = 60
+              state.smsSendBtn = false
+            })
+        })
+       
+      });
+    })
+  },
+  mounted () {
+    // this.checkUStatus()
+    // console.log(nmCryptokit)
+    checkBrowserUkeyCert()
+
+    setTimeout(() => {
+      getUkeyInfo().then(ukeyInfo => {
+        if (ukeyInfo) {
+          this.UObject = ukeyInfo
+        } else {
+          this.UObject = {}
+        }
+        
+      })
+    }, 3000)
+  },
   methods: {
+    gologin() {
+      this.$router.push({name: 'login'})
+    },
     handlePasswordLevel (rule, value, callback) {
       if (!value) {
        return callback()
@@ -209,7 +281,18 @@ export default {
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-          $router.push({ name: 'registerResult', params: { ...values } })
+          let uscc = this.UObject.uscc
+          let cfcaKeyId = this.UObject.cfcaKeyId
+          let sign = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
+          putResetPwd({loginName: values.loginName, newPassword: values.password, captcha: values.captcha, uscc, cfcaKeyId, sign}).then(res => {
+            if (res.status === 1) {
+               this.$message.success('重置密码成功', 0)
+               $router.push({ name: 'login' })
+            } else {
+              this.$message.error(res.message, 0)
+            }
+          })
+          // 
         }
       })
     },
@@ -217,36 +300,38 @@ export default {
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state, $message, $notification } = this
-
-      validateFields(['mobile'], { force: true },
+      
+      
+      validateFields(['loginName'], { force: true },
         (err, values) => {
           if (!err) {
-            state.smsSendBtn = true
+            gt.showCaptcha();
+            // state.smsSendBtn = true
 
-            const interval = window.setInterval(() => {
-              if (state.time-- <= 0) {
-                state.time = 60
-                state.smsSendBtn = false
-                window.clearInterval(interval)
-              }
-            }, 1000)
+            // const interval = window.setInterval(() => {
+            //   if (state.time-- <= 0) {
+            //     state.time = 60
+            //     state.smsSendBtn = false
+            //     window.clearInterval(interval)
+            //   }
+            // }, 1000)
 
-            const hide = $message.loading('验证码发送中..', 0)
+            // const hide = $message.loading('验证码发送中..', 0)
 
-            getSmsCaptcha({ mobile: values.mobile }).then(res => {
-              setTimeout(hide, 2500)
-              $notification['success']({
-                message: '提示',
-                description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-                duration: 8
-              })
-            }).catch(err => {
-              setTimeout(hide, 1)
-              clearInterval(interval)
-              state.time = 60
-              state.smsSendBtn = false
-              this.requestFailed(err)
-            })
+            // getSmsCaptcha({ mobile: values.mobile }).then(res => {
+            //   setTimeout(hide, 2500)
+            //   $notification['success']({
+            //     message: '提示',
+            //     description: '验证码获取成功，您的验证码为：' + res.result.captcha,
+            //     duration: 8
+            //   })
+            // }).catch(err => {
+            //   setTimeout(hide, 1)
+            //   clearInterval(interval)
+            //   state.time = 60
+            //   state.smsSendBtn = false
+            //   this.requestFailed(err)
+            // })
           }
         }
       )
@@ -303,9 +388,13 @@ export default {
       width: 100%;
       height: 40px;
     }
-
+    .btns {
+      display: flex;
+      justify-content: space-between;
+    }
     .register-button {
-      width: 50%;
+      width: 40%;
+      // margin-left: 30px;
     }
 
     .login {

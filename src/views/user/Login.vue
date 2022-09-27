@@ -66,19 +66,28 @@
        <a-form-item>
             <a-input
               size="large"
-              :placeholder="UObject ? 'U盾检测成功': 'U盾检测中'"
+              :placeholder="UObject.cfcaKeyId ? 'U盾检测成功': 'U盾检测中'"
               disabled
             >
             </a-input>
           </a-form-item>
       <div id='captcha'></div>
-      <!-- <a-form-item>
+      <div v-if="UObject.cfcaKeyId" class="text">
+        U盾ID：{{UObject.cfcaKeyId}}
+      </div>
+      <div v-if="UObject.cfcaKeyId" class="text">
+        企业名称：{{UObject.company}}
+      </div>
+      <div v-if="UObject.cfcaKeyId" class="text">
+        企业信用代码编号：CCC{{UObject.uscc}}
+      </div>
+      <a-form-item>
         <router-link
-          :to="{ name: 'pwd' }"
+          :to="{ name: 'forgot' }"
           class="forge-password"
           style="float: right;"
         >忘记密码</router-link>
-      </a-form-item> -->
+      </a-form-item>
       <a-form-item style="margin-top:24px">
         <a-button
           size="large"
@@ -124,7 +133,7 @@ export default {
         loginType: 0,
         smsSendBtn: false
       },
-      UObject: ''
+      UObject: {}
     }
   },
   created () {
@@ -168,7 +177,12 @@ export default {
 
     setTimeout(() => {
       getUkeyInfo().then(ukeyInfo => {
-        this.UObject = ukeyInfo
+        if (ukeyInfo) {
+          this.UObject = ukeyInfo
+        } else {
+          this.UObject = {}
+        }
+        
       })
     }, 3000)
   },
@@ -343,6 +357,9 @@ export default {
     height: 40px;
   }
 
+  .text {
+    font-size: 14px;
+  }
   .forge-password {
     font-size: 14px;
   }
