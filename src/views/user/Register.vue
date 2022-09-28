@@ -289,15 +289,19 @@ export default {
           state.passwordLevelChecked = false
           let uscc = this.UObject.uscc
           let cfcaKeyId = this.UObject.cfcaKeyId
-          let sign = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
-          putResetPwd({loginName: values.loginName, newPassword: values.password, captcha: values.captcha, uscc, cfcaKeyId, sign}).then(res => {
-            if (res.status === 1) {
-               this.$message.success('重置密码成功', 0)
-               $router.push({ name: 'login' })
-            } else {
-              this.$message.error(res.message, 0)
-            }
+          let signSource = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
+           CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
+              var sign = res.result
+              putResetPwd({loginName: values.loginName, newPassword: values.password, captcha: values.captcha, uscc, cfcaKeyId, sign}).then(res => {
+                if (res.status === 1) {
+                  this.$message.success('重置密码成功', 0)
+                  $router.push({ name: 'login' })
+                } else {
+                  this.$message.error(res.message, 0)
+                }
+              })
           })
+          
           // 
         }
       })

@@ -79,7 +79,7 @@
         企业名称：{{UObject.company}}
       </div>
       <div v-if="UObject.cfcaKeyId" class="text">
-        企业信用代码编号：CCC{{UObject.uscc}}
+        企业信用代码编号：{{UObject.uscc}}
       </div>
       <a-form-item>
         <router-link
