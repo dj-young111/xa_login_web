@@ -290,6 +290,8 @@ export default {
           let uscc = this.UObject.uscc
           let cfcaKeyId = this.UObject.cfcaKeyId
           let signSource = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
+          var browser = BrowserInfo();
+          var CryptoKit = new nmCryptokit(browser.name);
            CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
               var sign = res.result
               putResetPwd({loginName: values.loginName, newPassword: values.password, captcha: values.captcha, uscc, cfcaKeyId, sign}).then(res => {
