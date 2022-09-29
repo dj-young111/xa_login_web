@@ -11,11 +11,11 @@
         :dataSource="data"
         :pagination='false'
       >
-        <span slot="clientName" slot-scope="text, record"  @click="goRedirect(record.website)" style="cursor: pointer">
+        <span slot="clientName" :class="record.isRedirect ? 'true': 'false'" slot-scope="text, record"  @click="goRedirect(record.website, record)" >
           {{ text }}
         </span>
         <span slot="website" slot-scope="text, record">
-          <a  @click="goRedirect(text)"><img :src="record.icon" alt="" class="img"></a>
+          <a  @click="goRedirect(text, record)"><img :src="record.icon" alt="" class="img"></a>
         </span>
       </a-table>
     </a-card>
@@ -82,7 +82,10 @@ export default {
     }
   },
    methods: {
-    goRedirect(text) {
+    goRedirect(text, record) {
+      if(!record.isRedirect) {
+        return
+      }
       checkIsLogin({redirect:text}).then(res => {
           console.log(res)
           if (res.data) {
@@ -101,5 +104,12 @@ export default {
 .img {
   width: 160px;
   height: 60px;
+}
+.false {
+  color: rgb(205, 200, 200);
+  
+}
+.true {
+  cursor: pointer;
 }
 </style>

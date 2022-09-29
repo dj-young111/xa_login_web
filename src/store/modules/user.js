@@ -43,6 +43,7 @@ const user = {
           storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', result.token)
           storage.set('name', result.mobile)
+          storage.set('loginName', result.loginName)
           resolve()
         }).catch(error => {
           reject(error)

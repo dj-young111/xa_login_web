@@ -223,8 +223,8 @@ export default {
             var CryptoKit = new nmCryptokit(browser.name);
             CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
               var sign = res.result
-              loginParams.subject =  this.UObject.subject
-              loginParams.cfcaKeyId =  this.UObject.cfcaKeyId
+              loginParams.subject = this.UObject.subject
+              loginParams.cfcaKeyId = this.UObject.cfcaKeyId
               loginParams.sign = sign
             checkCfcaKey(loginParams.loginName,  this.UObject.uscc).then(result => {
               if (result.data === 1) {

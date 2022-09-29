@@ -1,6 +1,10 @@
 <template>
 <page-header-wrapper>
   <div class="main modify-phone">
+    <a-form-item label='登录名'>
+        <a-input size="large" :placeholder="'登录名'" :value='loginName' disabled>
+        </a-input>
+      </a-form-item>
     <a-form ref="formRegister" :form="form" id="formRegister">
       <a-popover
         placement="rightTop"
@@ -76,7 +80,8 @@
 </template>
 
 <script>
-import { getSmsCaptcha } from '@/api/login'
+import { Modal } from 'ant-design-vue'
+import { checkIsLogin, getSmsCaptcha } from '@/api/login'
 import { putModifyPassword } from '@/api/clients'
 import { deviceMixin } from '@/store/device-mixin'
 import { scorePassword } from '@/utils/util'
@@ -122,7 +127,8 @@ export default {
       },
       registerBtn: false,
       oldPhone: storage.get('name'),
-      captchaResult: ''
+      captchaResult: '',
+      loginName: ''
     }
   },
   computed: {
@@ -169,6 +175,7 @@ export default {
     })
   },
   mounted () {
+    this.loginName = storage.get('loginName')
   },
   methods: {
     handlePasswordLevel (rule, value, callback) {
@@ -232,12 +239,40 @@ export default {
           console.log(values)
           putModifyPassword({newPassword: values.password, captcha: values.captcha}).then(res => {
             if (res.status === 1) {
-               this.$message.success('密码修改成功', 0)
-               store.dispatch('Logout').then(() => {
-                setTimeout(() => {
-                  window.location.reload()
-                }, 1500)
-              })
+               this.$message.success('密码修改成功', 1)
+               if (this.$route.query.redirect) {
+                Modal.confirm({
+                  title: '信息',
+                  content: '修改成功',
+                  okText: '返回支付链',
+                  cancelText: '关闭',
+                  onOk: () => {
+                     checkIsLogin({redirect: this.$route.query.redirect}).then(res => {
+                        console.log(res)
+                        if (res.data) {
+                          location.href = decodeURIComponent(res.data)
+                        } else {
+                          this.$message.error({
+                            message: res.msg,
+                          })
+                        }
+                      })
+                  },
+                  onCancel () {
+                    store.dispatch('Logout').then(() => {
+                      setTimeout(() => {
+                        window.location.reload()
+                      }, 1500)
+                    })
+                  }
+                })
+              } else {
+                store.dispatch('Logout').then(() => {
+                      setTimeout(() => {
+                        window.location.reload()
+                      }, 1500)
+                })
+              }
             } else {
               this.$message.error(res.message, 0)
             }
