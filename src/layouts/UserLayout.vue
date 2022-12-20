@@ -3,7 +3,7 @@
   <div id="userLayout" :class="['user-layout-wrapper', isMobile && 'mobile']">
     <div class="container">
       <div class="user-layout-lang">
-        <!-- <select-lang class="select-lang-trigger" /> -->
+        <!-- <select-lang class="select-lang-trigger" /> --统一登录平台-->
       </div>
       <div class="user-layout-content">
         <div class="top">
@@ -14,7 +14,7 @@
             </a> -->
           </div>
           <h1 class="desc">
-            雄安新区建设项目资金管理区块链信息系统--统一登录平台
+            雄安新区建设项目资金管理区块链信息系统
           </h1>
         </div>
 
@@ -68,7 +68,7 @@ export default {
   .container {
     width: 100%;
     min-height: 100%;
-    background: #f0f2f5 url(~@/assets/background.svg) no-repeat 50%;
+    background: #f0f2f5 url(~@/assets/login-bg.png) no-repeat 50%;
     background-size: 100%;
     //padding: 50px 0 84px;
     position: relative;
@@ -128,10 +128,14 @@ export default {
           }
         }
         .desc {
-          font-size: 28px;
-          color: #111;
+          font-size: 38px;
           margin-top: 12px;
           margin-bottom: 40px;
+          // font-size: 51px;
+          font-family: MiSans-Semibold, MiSans;
+          font-weight: 600;
+          color: #FFFFFF;
+          text-shadow: 0px 3px 6px rgba(0,0,0,0.53);
         }
       }
 
@@ -139,21 +143,24 @@ export default {
         min-width: 260px;
         width: 368px;
         margin: 0 auto;
+        background: #FFFFFF;
+        border-radius: 19px;
+        padding: 20px 30px;
       }
 
       .footer {
-        // position: absolute;
+        position: absolute;
         width: 100%;
-        bottom: 0;
+        bottom: 58px;
         padding: 0 16px;
-        margin: 48px 0 24px;
+        // margin: 148px 0 24px;
         text-align: center;
 
         .links {
           margin-bottom: 8px;
           font-size: 14px;
           a {
-            color: rgba(0, 0, 0, 0.45);
+            color: #68B9FF;
             transition: all 0.3s;
             &:not(:last-child) {
               margin-right: 40px;
@@ -161,7 +168,7 @@ export default {
           }
         }
         .copyright {
-          color: rgba(0, 0, 0, 0.45);
+          color: #68B9FF;
           font-size: 14px;
         }
       }

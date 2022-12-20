@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    <div class="name">统一登录平台</div>
     <a-form
       id="formLogin"
       class="user-layout-login"
@@ -15,7 +16,7 @@
         <!-- <a-tab-pane key="tab1" :tab="'密码登录'"> -->
           <a-form-item>
             <a-input size="large" type="text" :placeholder="'登录名'" v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]">
-              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+              <a-icon slot="prefix" type="user" :style="{ color: '#A1A1A1' }"/>
             </a-input>
           </a-form-item>
 
@@ -28,7 +29,7 @@
                 {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
               ]"
             >
-              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+              <a-icon slot="prefix" type="lock" :style="{ color: '#A1A1A1' }"/>
             </a-input-password>
           </a-form-item>
           <!-- <a-form-item>
@@ -346,6 +347,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.name {
+  font-size: 18px;
+  font-family: MiSans-Demibold, MiSans;
+  font-weight: 600;
+  color: #003AB0;
+  text-align: center;
+  margin-bottom: 20px;
+}
 .user-layout-login {
   label {
     font-size: 14px;
