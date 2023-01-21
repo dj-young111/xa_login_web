@@ -32,10 +32,10 @@
               <a-icon slot="prefix" type="lock" :style="{ color: '#A1A1A1' }"/>
             </a-input-password>
           </a-form-item>
-          <!-- <a-form-item>
+          <a-form-item>
             <a-input size="large" type="text" :placeholder="'uscc'" v-decorator="['uscc', {rules: [{ required: true, message: '请输入uscc'}], validateTrigger: 'blur'}]">
             </a-input>
-          </a-form-item> -->
+          </a-form-item>
         <!-- </a-tab-pane> -->
         <!-- <a-tab-pane key="tab2" :tab="'验证码登录'">
           <a-form-item>
@@ -215,19 +215,7 @@ export default {
          
           loginParams.password = (values.password)
           console.log(loginParams)
-          getUkeyInfo().then(ukeyInfo => {
-            console.log(ukeyInfo)
-            this.UObject = ukeyInfo
-            var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc;
-            console.log(signSource)
-            var browser = BrowserInfo();
-            var CryptoKit = new nmCryptokit(browser.name);
-            CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
-              var sign = res.result
-              loginParams.subject = this.UObject.subject
-              loginParams.cfcaKeyId = this.UObject.cfcaKeyId
-              loginParams.sign = sign
-            checkCfcaKey(loginParams.loginName,  this.UObject.uscc).then(result => {
+           checkCfcaKey(loginParams.loginName,  loginParams.uscc).then(result => {
               if (result.data === 1) {
                 this.goLogin(loginParams)
               } else {
@@ -245,8 +233,38 @@ export default {
                 })
               }
             })
-              })
-            })
+          // getUkeyInfo().then(ukeyInfo => {
+          //   console.log(ukeyInfo)
+          //   this.UObject = ukeyInfo
+          //   var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc;
+          //   console.log(signSource)
+          //   var browser = BrowserInfo();
+          //   var CryptoKit = new nmCryptokit(browser.name);
+          //   CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
+          //     var sign = res.result
+          //     loginParams.subject = this.UObject.subject
+          //     loginParams.cfcaKeyId = this.UObject.cfcaKeyId
+          //     loginParams.sign = sign
+          //   checkCfcaKey(loginParams.loginName,  this.UObject.uscc).then(result => {
+          //     if (result.data === 1) {
+          //       this.goLogin(loginParams)
+          //     } else {
+          //       Modal.confirm({
+          //         title: '信息',
+          //         content: '确认绑定U盾并登录吗',
+          //         okText: '确认',
+          //         cancelText: '取消',
+          //         onOk: () => {
+          //           this.goLogin(loginParams)
+          //         },
+          //         onCancel () {
+          //           state.loginBtn = false
+          //         }
+          //       })
+          //     }
+          //   })
+          //     })
+          //   })
           // loginParams.uscc = this.UObject.uscc
           
          
