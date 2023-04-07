@@ -1,4 +1,5 @@
-nmCryptokit.chromeExtension = "bboilmpmiijbokbpfjbnljdnikhohccm";
+// nmCryptokit.chromeExtension = "bboilmpmiijbokbpfjbnljdnikhohccm";
+nmCryptokit.chromeExtension = "jacmbpfjcfjebkojngbcdjkinninobgk";
 nmCryptokit.productID = "com.cfca.cryptokit.cmsca";
 
 nmCryptokit.extensionName = nmCryptokit.productID + ".extension";
