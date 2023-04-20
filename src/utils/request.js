@@ -8,7 +8,8 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 // 创建 axios 实例
 const request = axios.create({
   // API 请求的默认前缀
-  baseURL: 'http://120.53.124.140:8001', // process.env.VUE_APP_API_BASE_URL,
+  // baseURL: 'http://120.53.124.140:8001', // process.env.VUE_APP_API_BASE_URL,
+  baseURL: 'https://api.login.xacip.net', // process.env.VUE_APP_API_BASE_URL,
   timeout: 6000 // 请求超时时间
 })
 

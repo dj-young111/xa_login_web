@@ -1,6 +1,6 @@
 import storage from 'store'
 import expirePlugin from 'store/plugins/expire'
-import { login, getInfo, logout } from '@/api/login'
+import { login, getInfo, logout, expertLogin } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
@@ -53,7 +53,28 @@ const user = {
             storage.set('loginName', result.loginName)
             resolve()
           }
-          
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    ExpertLogin ({ commit }, userInfo) {
+      return new Promise((resolve, reject) => {
+        expertLogin(userInfo).then(response => {
+          if (response.status === -1) {
+            this.$notification['error']({
+              message: '错误',
+              description: response.message || '请求出现错误，请稍后再试',
+              duration: 4
+            })
+          } else {
+            const result = response.data
+            storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', result.token)
+            storage.set('name', result.mobile)
+            storage.set('loginName', result.loginName)
+            resolve()
+          }
         }).catch(error => {
           reject(error)
         })

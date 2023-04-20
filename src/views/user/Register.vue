@@ -10,7 +10,7 @@
           v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]"
         ></a-input>
       </a-form-item>
-       <a-form-item>
+      <a-form-item>
         <a-input
           size="large"
           :placeholder="UObject.cfcaKeyId ? 'U盾检测成功': 'U盾检测中'"
@@ -84,22 +84,22 @@
       <a-form-item>
         <div class="btns">
           <a-button
-          size="large"
-          type="primary"
-          htmlType="submit"
-          class="register-button"
-          :loading="registerBtn"
-          @click.stop.prevent="handleSubmit"
-          :disabled="registerBtn">确定
-        </a-button>
-        <a-button
-          size="large"
-          class="register-button"
-          @click="gologin"
+            size="large"
+            type="primary"
+            htmlType="submit"
+            class="register-button"
+            :loading="registerBtn"
+            @click.stop.prevent="handleSubmit"
+            :disabled="registerBtn">确定
+          </a-button>
+          <a-button
+            size="large"
+            class="register-button"
+            @click="gologin"
           >取消
-        </a-button>
+          </a-button>
         </div>
-        
+
         <!-- <router-link class="login" :to="{ name: 'login' }">取消</router-link> -->
       </a-form-item>
 
@@ -111,9 +111,9 @@
 import { getSmsCaptcha } from '@/api/login'
 import { deviceMixin } from '@/store/device-mixin'
 import { scorePassword } from '@/utils/util'
-import {checkBrowserUkeyCert, getUkeyInfo, BrowserInfo} from '@/utils/checkBrowserUkeyCert'
+import { checkBrowserUkeyCert, getUkeyInfo, BrowserInfo } from '@/utils/checkBrowserUkeyCert'
 import nmCryptokit from '@/utils/nmCryptoKit'
-import {putResetPwd} from '@/api/clients'
+import { putResetPwd } from '@/api/clients'
 
 const levelNames = {
   0: 'user.password.strength.short',
@@ -174,8 +174,8 @@ export default {
       product: 'bind'
     }, (captchaObj) => {
       gt = captchaObj
-      captchaObj.onSuccess( () => {
-        var result = captchaObj.getValidate();
+      captchaObj.onSuccess(() => {
+        var result = captchaObj.getValidate()
         console.log(result)
         this.captchaResult = result
         const { form: { validateFields }, state, $message } = this
@@ -190,7 +190,7 @@ export default {
               }
             }, 1000)
             const hide = $message.loading('验证码发送中..', 0)
-            getSmsCaptcha({loginName: values.loginName, uscc: this.UObject.uscc, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(res => {
+            getSmsCaptcha({ loginName: values.loginName, uscc: this.UObject.uscc, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(res => {
               setTimeout(hide, 2500)
               if (res.status === 1) {
                 this.phone = res.data
@@ -205,8 +205,7 @@ export default {
               state.smsSendBtn = false
             })
         })
-       
-      });
+      })
     })
   },
   mounted () {
@@ -221,13 +220,12 @@ export default {
         } else {
           this.UObject = {}
         }
-        
       })
     }, 3000)
   },
   methods: {
-    gologin() {
-      this.$router.push({name: 'login'})
+    gologin () {
+      this.$router.push({ name: 'login' })
     },
     handlePasswordLevel (rule, value, callback) {
       if (!value) {
@@ -287,14 +285,14 @@ export default {
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-          let uscc = this.UObject.uscc
-          let cfcaKeyId = this.UObject.cfcaKeyId
-          let signSource = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
-          var browser = BrowserInfo();
-          var CryptoKit = new nmCryptokit(browser.name);
-           CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
+          const uscc = this.UObject.uscc
+          const cfcaKeyId = this.UObject.cfcaKeyId
+          const signSource = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
+          var browser = BrowserInfo()
+          var CryptoKit = new nmCryptokit(browser.name)
+           CryptoKit.signMsgPKCS7(signSource, 'SHA-256', true).then(res => {
               var sign = res.result
-              putResetPwd({loginName: values.loginName, newPassword: values.password, captcha: values.captcha, uscc, cfcaKeyId, sign}).then(res => {
+              putResetPwd({ loginName: values.loginName, newPassword: values.password, captcha: values.captcha, uscc, cfcaKeyId, sign }).then(res => {
                 if (res.status === 1) {
                   this.$message.success('重置密码成功', 0)
                   $router.push({ name: 'login' })
@@ -303,8 +301,8 @@ export default {
                 }
               })
           })
-          
-          // 
+
+          //
         }
       })
     },
@@ -312,12 +310,11 @@ export default {
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state, $message, $notification } = this
-      
-      
+
       validateFields(['loginName'], { force: true },
         (err, values) => {
           if (!err) {
-            gt.showCaptcha();
+            gt.showCaptcha()
             // state.smsSendBtn = true
 
             // const interval = window.setInterval(() => {

@@ -13,31 +13,31 @@
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
         @change="handleTabClick"
       > -->
-        <!-- <a-tab-pane key="tab1" :tab="'密码登录'"> -->
-          <a-form-item>
-            <a-input size="large" type="text" :placeholder="'登录名'" v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]">
-              <a-icon slot="prefix" type="user" :style="{ color: '#A1A1A1' }"/>
-            </a-input>
-          </a-form-item>
+      <!-- <a-tab-pane key="tab1" :tab="'密码登录'"> -->
+      <a-form-item>
+        <a-input size="large" type="text" :placeholder="'登录名'" v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]">
+          <a-icon slot="prefix" type="user" :style="{ color: '#A1A1A1' }"/>
+        </a-input>
+      </a-form-item>
 
-          <a-form-item>
-            <a-input-password
-              size="large"
-              placeholder="密码"
-              v-decorator="[
-                'password',
-                {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
-              ]"
-            >
-              <a-icon slot="prefix" type="lock" :style="{ color: '#A1A1A1' }"/>
-            </a-input-password>
-          </a-form-item>
-          <!-- <a-form-item>
+      <a-form-item>
+        <a-input-password
+          size="large"
+          placeholder="密码"
+          v-decorator="[
+            'password',
+            {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
+          ]"
+        >
+          <a-icon slot="prefix" type="lock" :style="{ color: '#A1A1A1' }"/>
+        </a-input-password>
+      </a-form-item>
+      <!-- <a-form-item>
             <a-input size="large" type="text" :placeholder="'uscc'" v-decorator="['uscc', {rules: [{ required: true, message: '请输入uscc'}], validateTrigger: 'blur'}]">
             </a-input>
           </a-form-item> -->
-        <!-- </a-tab-pane> -->
-        <!-- <a-tab-pane key="tab2" :tab="'验证码登录'">
+      <!-- </a-tab-pane> -->
+      <!-- <a-tab-pane key="tab2" :tab="'验证码登录'">
           <a-form-item>
             <a-input size="large" type="text" :placeholder="'手机号'" v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: $t('user.login.mobile.placeholder') }], validateTrigger: 'change'}]">
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -64,23 +64,23 @@
           </a-row>
         </a-tab-pane>
       </a-tabs> -->
-       <a-form-item>
-            <a-input
-              size="large"
-              :placeholder="UObject.cfcaKeyId ? 'U盾检测成功': 'U盾检测中'"
-              disabled
-            >
-            </a-input>
-          </a-form-item>
-      <div id='captcha'></div>
+      <a-form-item>
+        <a-input
+          size="large"
+          :placeholder="UObject.cfcaKeyId ? 'U盾检测成功': 'U盾检测中'"
+          disabled
+        >
+        </a-input>
+      </a-form-item>
+      <div id="captcha"></div>
       <div v-if="UObject.cfcaKeyId" class="text">
-        U盾ID：{{UObject.cfcaKeyId}}
+        U盾ID：{{ UObject.cfcaKeyId }}
       </div>
       <div v-if="UObject.cfcaKeyId" class="text">
-        企业名称：{{UObject.company}}
+        企业名称：{{ UObject.company }}
       </div>
       <div v-if="UObject.cfcaKeyId" class="text">
-        企业信用代码编号：{{UObject.uscc}}
+        企业信用代码编号：{{ UObject.uscc }}
       </div>
       <a-form-item>
         <a href="https://ssoserver-1306199973.cos.ap-beijing.myqcloud.com/CFCA%20.pdf" target="_blank">Cfca Key盾使用手册</a>
@@ -96,7 +96,7 @@
           type="primary"
           htmlType="submit"
           class="login-button"
-          
+
           :disabled="state.loginBtn"
         >登录</a-button>
       </a-form-item>
@@ -109,13 +109,11 @@
 import { Modal } from 'ant-design-vue'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login'
-import {checkBrowserUkeyCert, getUkeyInfo, BrowserInfo} from '@/utils/checkBrowserUkeyCert'
+import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey, login, getInfo, logout } from '@/api/login'
+import { checkBrowserUkeyCert, getUkeyInfo, BrowserInfo } from '@/utils/checkBrowserUkeyCert'
 import nmCryptokit from '@/utils/nmCryptoKit'
 import storage from 'store'
-import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-
 
 let gt
 export default {
@@ -171,7 +169,7 @@ export default {
     //       this.requestFailed(err)
     //     })
     //    })
-      
+
     // });
     // })
   },
@@ -190,7 +188,6 @@ export default {
           this.UObject = {}
           this.state.loginBtn = true
         }
-        
       })
     }, 3000)
   },
@@ -208,34 +205,32 @@ export default {
         customActiveKey,
         Login
       } = this
-      
 
       state.loginBtn = true
 
       const validateFieldsKey = ['loginName', 'password', 'uscc']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
-        
         if (!err) {
           console.log('login form', values)
           const loginParams = { ...values }
-         
+
           loginParams.password = (values.password)
           console.log(loginParams)
           getUkeyInfo().then(ukeyInfo => {
             console.log(ukeyInfo)
             ukeyInfo.uscc = ukeyInfo.uscc.substr(1)
             this.UObject = ukeyInfo
-            var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc;
+            var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc
             console.log(signSource)
-            var browser = BrowserInfo();
-            var CryptoKit = new nmCryptokit(browser.name);
-            CryptoKit.signMsgPKCS7(signSource, "SHA-256", true).then(res => {
+            var browser = BrowserInfo()
+            var CryptoKit = new nmCryptokit(browser.name)
+            CryptoKit.signMsgPKCS7(signSource, 'SHA-256', true).then(res => {
               var sign = res.result
               loginParams.subject = this.UObject.subject
               loginParams.cfcaKeyId = this.UObject.cfcaKeyId
               loginParams.sign = sign
-            checkCfcaKey(loginParams.loginName,  this.UObject.uscc).then(result => {
+            checkCfcaKey(loginParams.loginName, this.UObject.uscc).then(result => {
               if (result.data === 1) {
                 this.goLogin(loginParams)
               } else {
@@ -256,8 +251,6 @@ export default {
               })
             })
           // loginParams.uscc = this.UObject.uscc
-          
-         
         } else {
           setTimeout(() => {
             state.loginBtn = false
@@ -265,7 +258,7 @@ export default {
         }
       })
     },
-    goLogin(loginParams) {
+    goLogin (loginParams) {
       const {
         form: { validateFields },
         state,
@@ -306,16 +299,14 @@ export default {
         }).catch(error => {
           // reject(error)
         })
-
     },
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state } = this
-      
+
       validateFields(['mobile'], { force: true }, (err, values) => {
         if (!err) {
-          gt.showCaptcha();
-          
+          gt.showCaptcha()
         }
       })
     },
@@ -330,13 +321,13 @@ export default {
     },
     loginSuccess (res) {
       if (this.$route.query.redirect) {
-        checkIsLogin({redirect: this.$route.query.redirect}).then(res => {
+        checkIsLogin({ redirect: this.$route.query.redirect }).then(res => {
           console.log(res)
           if (res.data) {
             location.href = decodeURIComponent(res.data)
           } else {
             this.$message.error({
-              message: res.msg,
+              message: res.msg
             })
           }
         })
@@ -351,7 +342,6 @@ export default {
       }, 1000)
       this.isLoginError = false
       }
-      
     },
     requestFailed (err) {
       this.isLoginError = true
@@ -362,7 +352,7 @@ export default {
       })
     },
     // 检测u盾状态
-    checkUStatus() {
+    checkUStatus () {
       this.UObject = {
         uscc: '',
         subject: '',

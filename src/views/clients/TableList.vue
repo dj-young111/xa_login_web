@@ -9,13 +9,13 @@
         rowKey="key"
         :columns="columns"
         :dataSource="data"
-        :pagination='false'
+        :pagination="false"
       >
-        <span slot="clientName" :class="record.isRedirect ? 'true': 'false'" slot-scope="text, record"  @click="goRedirect(record.website, record)" >
+        <span slot="clientName" :class="record.isRedirect ? 'true': 'false'" slot-scope="text, record" @click="goRedirect(record.website, record)" >
           {{ text }}
         </span>
         <span slot="website" slot-scope="text, record">
-          <a  @click="goRedirect(text, record)"><img :src="record.icon" alt="" class="img"></a>
+          <a @click="goRedirect(text, record)"><img :src="record.icon" alt="" class="img"></a>
         </span>
       </a-table>
     </a-card>
@@ -25,7 +25,7 @@
 <script>
 import { STable } from '@/components'
 import { getClients } from '@/api/clients'
-import {checkIsLogin} from '@/api/login'
+import { checkIsLogin } from '@/api/login'
 const columns = [
   // {
   //   title: '#',
@@ -82,22 +82,22 @@ export default {
     }
   },
    methods: {
-    goRedirect(text, record) {
-      if(!record.isRedirect) {
+    goRedirect (text, record) {
+      if (!record.isRedirect) {
         return
       }
-      checkIsLogin({redirect:text}).then(res => {
+      checkIsLogin({ redirect: text }).then(res => {
           console.log(res)
           if (res.data) {
             location.href = decodeURIComponent(res.data)
           } else {
             this.$message.error({
-              message: res.msg,
+              message: res.msg
             })
           }
         })
     }
-  },
+  }
 }
 </script>
 <style lang="less" scoped>
@@ -107,7 +107,7 @@ export default {
 }
 .false {
   color: rgb(205, 200, 200);
-  
+
 }
 .true {
   cursor: pointer;

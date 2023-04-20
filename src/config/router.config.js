@@ -134,10 +134,15 @@ export const constantRouterMap = [
         component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
       },
       {
+        path: '/expertlogin',
+        name: 'expertlogin',
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/expertlogin.vue')
+      },
+      {
         path: '/forgot',
         name: 'forgot',
         component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
-      },
+      }
       // {
       //   path: 'register-result',
       //   name: 'registerResult',

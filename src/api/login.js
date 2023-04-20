@@ -31,7 +31,13 @@ export function login (parameter) {
     data: parameter
   })
 }
-
+export function expertLogin (parameter) {
+  return request({
+    url: '/sso/expertLogin',
+    method: 'post',
+    data: parameter
+  })
+}
 export function getSmsCaptcha (parameter) {
   return request({
     url: '/user/sms',
@@ -92,6 +98,6 @@ export function checkIsLogin (parameter) {
 export function checkCfcaKey (loginName, uscc) {
   return request({
     url: `/user/checkCfcaKey/${loginName}/${uscc}`,
-    method: 'get',
+    method: 'get'
   })
 }

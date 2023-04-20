@@ -1,7 +1,7 @@
 <template>
   <global-footer class="footer custom-render">
     <template v-slot:links>
-       Copyright &copy; 2022 雄安新区财政支付中心
+      Copyright &copy; 2022 雄安新区财政支付中心
     </template>
   </global-footer>
 </template>

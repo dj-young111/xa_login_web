@@ -1,54 +1,54 @@
 <template>
-<page-header-wrapper>
-  <div class="main modify-phone">
-    <a-form ref="formRegister" :form="form" id="formRegister">
-      <a-form-item label='登录名'>
-        <a-input size="large" :placeholder="'登录名'" :value='loginName' disabled>
-        </a-input>
-      </a-form-item>
-      <a-form-item label='原手机号'>
-        <a-input size="large" :placeholder="'原手机号'" :value='oldPhone' disabled>
-        </a-input>
-      </a-form-item>
-      <a-form-item >
-        <a-input size="large" :placeholder="'新手机号'" v-decorator="['mobile', {rules: [{ required: true, message: $t('user.phone-number.required'), pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
-          <a-select slot="addonBefore" size="large" defaultValue="+86">
-            <a-select-option value="+86">+86</a-select-option>
-          </a-select>
-        </a-input>
-      </a-form-item>
-      <a-row :gutter="16">
-        <a-col class="gutter-row" :span="16">
-          <a-form-item >
-            <a-input size="large" type="text" :placeholder="$t('user.login.mobile.verification-code.placeholder')" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
-              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
-        </a-col>
-        <a-col class="gutter-row" :span="8">
+  <page-header-wrapper>
+    <div class="main modify-phone">
+      <a-form ref="formRegister" :form="form" id="formRegister">
+        <a-form-item label="登录名">
+          <a-input size="large" :placeholder="'登录名'" :value="loginName" disabled>
+          </a-input>
+        </a-form-item>
+        <a-form-item label="原手机号">
+          <a-input size="large" :placeholder="'原手机号'" :value="oldPhone" disabled>
+          </a-input>
+        </a-form-item>
+        <a-form-item >
+          <a-input size="large" :placeholder="'新手机号'" v-decorator="['mobile', {rules: [{ required: true, message: $t('user.phone-number.required'), pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
+            <a-select slot="addonBefore" size="large" defaultValue="+86">
+              <a-select-option value="+86">+86</a-select-option>
+            </a-select>
+          </a-input>
+        </a-form-item>
+        <a-row :gutter="16">
+          <a-col class="gutter-row" :span="16">
+            <a-form-item >
+              <a-input size="large" type="text" :placeholder="$t('user.login.mobile.verification-code.placeholder')" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
+                <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+              </a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="gutter-row" :span="8">
+            <a-button
+              class="getCaptcha"
+              size="large"
+              :disabled="state.smsSendBtn"
+              @click.stop.prevent="getCaptcha"
+              v-text="!state.smsSendBtn && $t('user.register.get-verification-code')||(state.time+' s')"></a-button>
+          </a-col>
+        </a-row>
+
+        <a-form-item>
           <a-button
-            class="getCaptcha"
             size="large"
-            :disabled="state.smsSendBtn"
-            @click.stop.prevent="getCaptcha"
-            v-text="!state.smsSendBtn && $t('user.register.get-verification-code')||(state.time+' s')"></a-button>
-        </a-col>
-      </a-row>
+            type="primary"
+            htmlType="submit"
+            class="register-button"
+            :loading="registerBtn"
+            @click.stop.prevent="handleSubmit"
+            :disabled="registerBtn">确定
+          </a-button>
+        </a-form-item>
 
-      <a-form-item>
-        <a-button
-          size="large"
-          type="primary"
-          htmlType="submit"
-          class="register-button"
-          :loading="registerBtn"
-          @click.stop.prevent="handleSubmit"
-          :disabled="registerBtn">确定
-        </a-button>
-      </a-form-item>
-
-    </a-form>
-  </div>
+      </a-form>
+    </div>
   </page-header-wrapper>
 </template>
 
@@ -109,8 +109,8 @@ export default {
       product: 'bind'
     }, (captchaObj) => {
       gt = captchaObj
-      captchaObj.onSuccess( () => {
-        var result = captchaObj.getValidate();
+      captchaObj.onSuccess(() => {
+        var result = captchaObj.getValidate()
         console.log(result)
         this.captchaResult = result
         const { state, $message } = this
@@ -135,7 +135,7 @@ export default {
             state.smsSendBtn = false
           })
         })
-      });
+      })
     })
   },
   mounted () {
@@ -213,7 +213,7 @@ export default {
         if (!err) {
           state.passwordLevelChecked = false
           console.log(values)
-          putModifyPhone({newMobile: values.mobile, captcha: values.captcha}).then(res => {
+          putModifyPhone({ newMobile: values.mobile, captcha: values.captcha }).then(res => {
             if (res.status === 1) {
                this.$message.success('新手机号设置成功', 1)
               if (this.$route.query.redirect) {
@@ -223,13 +223,13 @@ export default {
                   okText: '返回支付链',
                   cancelText: '关闭',
                   onOk: () => {
-                     checkIsLogin({redirect: this.$route.query.redirect}).then(res => {
+                     checkIsLogin({ redirect: this.$route.query.redirect }).then(res => {
                         console.log(res)
                         if (res.data) {
                           location.href = decodeURIComponent(res.data)
                         } else {
                           this.$message.error({
-                            message: res.msg,
+                            message: res.msg
                           })
                         }
                       })
@@ -249,8 +249,6 @@ export default {
                       }, 1500)
                 })
               }
-              
-               
             } else {
               this.$message.error(res.message, 1)
             }
@@ -262,7 +260,7 @@ export default {
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state, $message, $notification } = this
-       gt.showCaptcha(); 
+       gt.showCaptcha()
       return
       validateFields(['mobile'], { force: true },
         (err, values) => {

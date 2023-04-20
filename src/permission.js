@@ -11,8 +11,9 @@ import { i18nRender } from '@/locales'
 import { checkIsLogin, checkCfcaKey } from '@/api/login'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const allowList = ['login', 'forgot'] // no redirect allowList
+const allowList = ['login', 'expertlogin', 'forgot'] // no redirect allowList
 const loginRoutePath = '/login'
+const expertloginRoutePath = '/expertlogin'
 const defaultRoutePath = '/'
 
 router.beforeEach((to, from, next) => {
@@ -21,10 +22,10 @@ router.beforeEach((to, from, next) => {
   /* has token */
   const token = storage.get(ACCESS_TOKEN)
   if (token) {
-    if (to.path === loginRoutePath) {
+    if (to.path === loginRoutePath || to.path === expertloginRoutePath) {
       console.log(to)
-      if ( to.query.redirect) {
-        checkIsLogin({redirect: to.query.redirect}).then(res => {
+      if (to.query.redirect) {
+        checkIsLogin({ redirect: to.query.redirect }).then(res => {
           console.log(res)
           if (res.data) {
             location.href = decodeURIComponent(res.data)
@@ -38,7 +39,7 @@ router.beforeEach((to, from, next) => {
       } else {
         next({ path: defaultRoutePath })
       }
-      
+
       NProgress.done()
     } else {
       next()

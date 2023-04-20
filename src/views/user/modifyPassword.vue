@@ -1,81 +1,81 @@
 <template>
-<page-header-wrapper>
-  <div class="main modify-phone">
-    <a-form-item label='登录名'>
-        <a-input size="large" :placeholder="'登录名'" :value='loginName' disabled>
+  <page-header-wrapper>
+    <div class="main modify-phone">
+      <a-form-item label="登录名">
+        <a-input size="large" :placeholder="'登录名'" :value="loginName" disabled>
         </a-input>
       </a-form-item>
-    <a-form ref="formRegister" :form="form" id="formRegister">
-      <a-popover
-        placement="rightTop"
-        :trigger="['focus']"
-        :getPopupContainer="(trigger) => trigger.parentElement"
-        v-model="state.passwordLevelChecked">
-        <template slot="content">
-          <div :style="{ width: '240px' }" >
-            <div :class="['user-register', passwordLevelClass]">{{ $t(passwordLevelName) }}</div>
-            <a-progress :percent="state.percent" :showInfo="false" :strokeColor=" passwordLevelColor " />
-            <div style="margin-top: 10px;">
-              <span>{{ $t('user.register.password.popover-message') }}
-              </span>
+      <a-form ref="formRegister" :form="form" id="formRegister">
+        <a-popover
+          placement="rightTop"
+          :trigger="['focus']"
+          :getPopupContainer="(trigger) => trigger.parentElement"
+          v-model="state.passwordLevelChecked">
+          <template slot="content">
+            <div :style="{ width: '240px' }" >
+              <div :class="['user-register', passwordLevelClass]">{{ $t(passwordLevelName) }}</div>
+              <a-progress :percent="state.percent" :showInfo="false" :strokeColor=" passwordLevelColor " />
+              <div style="margin-top: 10px;">
+                <span>{{ $t('user.register.password.popover-message') }}
+                </span>
+              </div>
             </div>
-          </div>
-        </template>
+          </template>
+          <a-form-item>
+            <a-input-password
+              size="large"
+              @click="handlePasswordInputClick"
+              :placeholder="$t('user.register.password.placeholder')"
+              v-decorator="['password', {rules: [{ required: true, message: $t('user.password.required') }, { validator: this.handlePasswordLevel }], validateTrigger: ['change', 'blur']}]"
+            ></a-input-password>
+          </a-form-item>
+        </a-popover>
+
         <a-form-item>
           <a-input-password
             size="large"
-            @click="handlePasswordInputClick"
-            :placeholder="$t('user.register.password.placeholder')"
-            v-decorator="['password', {rules: [{ required: true, message: $t('user.password.required') }, { validator: this.handlePasswordLevel }], validateTrigger: ['change', 'blur']}]"
+            :placeholder="$t('user.register.confirm-password.placeholder')"
+            v-decorator="['password2', {rules: [{ required: true, message: $t('user.password.required') }, { validator: this.handlePasswordCheck }], validateTrigger: ['change', 'blur']}]"
           ></a-input-password>
         </a-form-item>
-      </a-popover>
+        <a-form-item >
+          <a-input size="large" :placeholder="'原手机号'" :value="oldPhone" disabled>
+          </a-input>
+        </a-form-item>
+        <div id="captcha11"></div>
+        <a-row :gutter="16">
+          <a-col class="gutter-row" :span="16">
+            <a-form-item >
+              <a-input size="large" type="text" :placeholder="$t('user.login.mobile.verification-code.placeholder')" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
+                <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+              </a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="gutter-row" :span="8">
+            <a-button
+              class="getCaptcha"
+              size="large"
+              :disabled="state.smsSendBtn"
+              @click.stop.prevent="getCaptcha"
+              v-text="!state.smsSendBtn && $t('user.register.get-verification-code')||(state.time+' s')"></a-button>
+          </a-col>
+        </a-row>
 
-      <a-form-item>
-        <a-input-password
-          size="large"
-          :placeholder="$t('user.register.confirm-password.placeholder')"
-          v-decorator="['password2', {rules: [{ required: true, message: $t('user.password.required') }, { validator: this.handlePasswordCheck }], validateTrigger: ['change', 'blur']}]"
-        ></a-input-password>
-      </a-form-item>
-      <a-form-item >
-        <a-input size="large" :placeholder="'原手机号'" :value='oldPhone' disabled>
-        </a-input>
-      </a-form-item>
-      <div id='captcha11'></div>
-      <a-row :gutter="16">
-        <a-col class="gutter-row" :span="16">
-          <a-form-item >
-            <a-input size="large" type="text" :placeholder="$t('user.login.mobile.verification-code.placeholder')" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
-              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
-        </a-col>
-        <a-col class="gutter-row" :span="8">
+        <a-form-item>
           <a-button
-            class="getCaptcha"
             size="large"
-            :disabled="state.smsSendBtn"
-            @click.stop.prevent="getCaptcha"
-            v-text="!state.smsSendBtn && $t('user.register.get-verification-code')||(state.time+' s')"></a-button>
-        </a-col>
-      </a-row>
-      
-      <a-form-item>
-        <a-button
-          size="large"
-          type="primary"
-          htmlType="submit"
-          class="register-button"
-          :loading="registerBtn"
-          @click.stop.prevent="handleSubmit"
-          :disabled="registerBtn">确定
-        </a-button>
-      </a-form-item>
+            type="primary"
+            htmlType="submit"
+            class="register-button"
+            :loading="registerBtn"
+            @click.stop.prevent="handleSubmit"
+            :disabled="registerBtn">确定
+          </a-button>
+        </a-form-item>
 
-    </a-form>
-  </div>
-  
+      </a-form>
+    </div>
+
   </page-header-wrapper>
 </template>
 
@@ -148,8 +148,8 @@ export default {
       product: 'bind'
     }, (captchaObj) => {
       gt = captchaObj
-      captchaObj.onSuccess( () => {
-        var result = captchaObj.getValidate();
+      captchaObj.onSuccess(() => {
+        var result = captchaObj.getValidate()
         console.log(result)
         this.captchaResult = result
         const { state, $message } = this
@@ -171,7 +171,7 @@ export default {
           state.time = 60
           state.smsSendBtn = false
         })
-      });
+      })
     })
   },
   mounted () {
@@ -237,7 +237,7 @@ export default {
         if (!err) {
           state.passwordLevelChecked = false
           console.log(values)
-          putModifyPassword({newPassword: values.password, captcha: values.captcha}).then(res => {
+          putModifyPassword({ newPassword: values.password, captcha: values.captcha }).then(res => {
             if (res.status === 1) {
                this.$message.success('密码修改成功', 1)
                if (this.$route.query.redirect) {
@@ -247,13 +247,13 @@ export default {
                   okText: '返回支付链',
                   cancelText: '关闭',
                   onOk: () => {
-                     checkIsLogin({redirect: this.$route.query.redirect}).then(res => {
+                     checkIsLogin({ redirect: this.$route.query.redirect }).then(res => {
                         console.log(res)
                         if (res.data) {
                           location.href = decodeURIComponent(res.data)
                         } else {
                           this.$message.error({
-                            message: res.msg,
+                            message: res.msg
                           })
                         }
                       })
@@ -284,7 +284,7 @@ export default {
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state, $message } = this
-      gt.showCaptcha(); //显示验证码
+      gt.showCaptcha() // 显示验证码
       return
       // if (this.captchaResult === '') {
       //   return
