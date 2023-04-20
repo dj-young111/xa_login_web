@@ -39,12 +39,21 @@ const user = {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          const result = response.data
-          storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
-          storage.set('name', result.mobile)
-          storage.set('loginName', result.loginName)
-          resolve()
+          if (response.status === -1) {
+            this.$notification['error']({
+              message: '错误',
+              description: response.message || '请求出现错误，请稍后再试',
+              duration: 4
+            })
+          } else {
+            const result = response.data
+            storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', result.token)
+            storage.set('name', result.mobile)
+            storage.set('loginName', result.loginName)
+            resolve()
+          }
+          
         }).catch(error => {
           reject(error)
         })

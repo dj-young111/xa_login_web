@@ -83,6 +83,7 @@
         企业信用代码编号：{{UObject.uscc}}
       </div>
       <a-form-item>
+        <a href="https://ssoserver-1306199973.cos.ap-beijing.myqcloud.com/CFCA%20.pdf" target="_blank">Cfca Key盾使用手册</a>
         <router-link
           :to="{ name: 'forgot' }"
           class="forge-password"
@@ -95,7 +96,7 @@
           type="primary"
           htmlType="submit"
           class="login-button"
-          :loading="state.loginBtn"
+          
           :disabled="state.loginBtn"
         >登录</a-button>
       </a-form-item>
@@ -111,6 +112,9 @@ import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step, checkIsLogin, checkCfcaKey } from '@/api/login'
 import {checkBrowserUkeyCert, getUkeyInfo, BrowserInfo} from '@/utils/checkBrowserUkeyCert'
 import nmCryptokit from '@/utils/nmCryptoKit'
+import storage from 'store'
+import { login, getInfo, logout } from '@/api/login'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 
 let gt
@@ -129,7 +133,7 @@ export default {
       form: this.$form.createForm(this),
       state: {
         time: 60,
-        loginBtn: false,
+        loginBtn: true,
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
         smsSendBtn: false
@@ -179,9 +183,12 @@ export default {
     setTimeout(() => {
       getUkeyInfo().then(ukeyInfo => {
         if (ukeyInfo) {
+          ukeyInfo.uscc = ukeyInfo.uscc.substr(1)
           this.UObject = ukeyInfo
+          this.state.loginBtn = false
         } else {
           this.UObject = {}
+          this.state.loginBtn = true
         }
         
       })
@@ -217,6 +224,7 @@ export default {
           console.log(loginParams)
           getUkeyInfo().then(ukeyInfo => {
             console.log(ukeyInfo)
+            ukeyInfo.uscc = ukeyInfo.uscc.substr(1)
             this.UObject = ukeyInfo
             var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc;
             console.log(signSource)
@@ -264,21 +272,41 @@ export default {
         customActiveKey,
         Login
       } = this
-      Login(loginParams)
-      .then((res) => {
-        this.loginSuccess(res)
-      })
-      .catch(err => {
-        this.$notification['error']({
-          message: '错误',
-          description: ((err.response || {}).data || {}).message || '账号验证失败',
-          duration: 4
+      // Login(loginParams)
+      // .then((res) => {
+      //   this.loginSuccess(res)
+      // })
+      // .catch(err => {
+      //   this.$notification['error']({
+      //     message: '错误',
+      //     description: ((err.response || {}).data || {}).message || '账号验证失败',
+      //     duration: 4
+      //   })
+      // }
+      // )
+      // .finally(() => {
+      //   state.loginBtn = false
+      // })
+      login(loginParams).then(response => {
+          if (response.status === -1) {
+            this.$notification['error']({
+              message: '错误',
+              description: response.message || '请求出现错误，请稍后再试',
+              duration: 4
+            })
+            this.state.loginBtn = false
+          } else {
+            const result = response.data
+            storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+            this.$store.commit('SET_TOKEN', result.token)
+            storage.set('name', result.mobile)
+            storage.set('loginName', result.loginName)
+            this.loginSuccess()
+          }
+        }).catch(error => {
+          // reject(error)
         })
-      }
-      )
-      .finally(() => {
-        state.loginBtn = false
-      })
+
     },
     getCaptcha (e) {
       e.preventDefault()
@@ -347,6 +375,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.main {
+  // min-height: 100vh;
+}
 .name {
   font-size: 18px;
   font-family: MiSans-Demibold, MiSans;
