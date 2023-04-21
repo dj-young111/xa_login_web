@@ -190,7 +190,8 @@ export default {
               }
             }, 1000)
             const hide = $message.loading('验证码发送中..', 0)
-            getSmsCaptcha({ loginName: values.loginName, uscc: this.UObject.uscc, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(res => {
+            const uscc = this.UObject.uscc.substr(1)
+            getSmsCaptcha({ loginName: values.loginName, uscc: uscc, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(res => {
               setTimeout(hide, 2500)
               if (res.status === 1) {
                 this.phone = res.data
@@ -285,7 +286,7 @@ export default {
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-          const uscc = this.UObject.uscc
+          const uscc = this.UObject.uscc.substr(1)
           const cfcaKeyId = this.UObject.cfcaKeyId
           const signSource = values.loginName + uscc + cfcaKeyId + values.password + values.captcha
           var browser = BrowserInfo()
