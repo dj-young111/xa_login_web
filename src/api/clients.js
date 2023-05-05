@@ -42,3 +42,10 @@ export function putResetPwd (data) {
     data
   })
 }
+export function putUnBindUkey (data) {
+  return request({
+    url: '/user/unBindUkey',
+    method: 'put',
+    data
+  })
+}

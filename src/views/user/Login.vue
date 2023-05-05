@@ -85,6 +85,11 @@
       <a-form-item>
         <a href="https://ssoserver-1306199973.cos.ap-beijing.myqcloud.com/CFCA%20.pdf" target="_blank">Cfca Key盾使用手册</a>
         <router-link
+          :to="{ name: 'unbindukey' }"
+          class="unbindukey"
+          style="margin-left: 13%"
+        >解绑U盾</router-link>
+        <router-link
           :to="{ name: 'forgot' }"
           class="forge-password"
           style="float: right;"
@@ -181,7 +186,6 @@ export default {
     setTimeout(() => {
       getUkeyInfo().then(ukeyInfo => {
         if (ukeyInfo) {
-          ukeyInfo.uscc = ukeyInfo.uscc.length > 18 ? ukeyInfo.uscc.substr(1) : ukeyInfo.uscc
           this.UObject = ukeyInfo
           this.state.loginBtn = false
         } else {
@@ -189,7 +193,7 @@ export default {
           this.state.loginBtn = true
         }
       })
-    }, 3000)
+    }, 200)
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
@@ -219,8 +223,6 @@ export default {
           console.log(loginParams)
           getUkeyInfo().then(ukeyInfo => {
             console.log(ukeyInfo)
-            ukeyInfo.uscc = ukeyInfo.uscc.length > 18 ? ukeyInfo.uscc.substr(1) : ukeyInfo.uscc
-
             this.UObject = ukeyInfo
             var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc
             console.log(signSource)
@@ -392,6 +394,9 @@ export default {
     font-size: 14px;
   }
   .forge-password {
+    font-size: 14px;
+  }
+  .unbindukey {
     font-size: 14px;
   }
 

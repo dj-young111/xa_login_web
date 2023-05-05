@@ -142,6 +142,11 @@ export const constantRouterMap = [
         path: '/forgot',
         name: 'forgot',
         component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
+      },
+      {
+        path: '/unbindukey',
+        name: 'unbindukey',
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/unbindukey')
       }
       // {
       //   path: 'register-result',

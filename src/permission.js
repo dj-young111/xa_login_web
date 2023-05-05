@@ -11,7 +11,7 @@ import { i18nRender } from '@/locales'
 import { checkIsLogin, checkCfcaKey } from '@/api/login'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const allowList = ['login', 'expertlogin', 'forgot'] // no redirect allowList
+const allowList = ['login', 'expertlogin', 'forgot', 'unbindukey'] // no redirect allowList
 const loginRoutePath = '/login'
 const expertloginRoutePath = '/expertlogin'
 const defaultRoutePath = '/'

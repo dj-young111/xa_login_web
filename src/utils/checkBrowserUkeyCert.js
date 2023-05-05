@@ -103,7 +103,9 @@ export function getUkeyInfo () {
             ukeyInfo.subject = res.result
             var arr = ukeyInfo.subject.split('@')
             ukeyInfo.company = arr[1]
-            ukeyInfo.uscc = arr[2]
+            var uscc = arr[2]
+            uscc = uscc.length > 18 ? uscc.substr(1) : uscc
+            ukeyInfo.uscc = uscc
             return CryptoKit.getSignCertInfo('SerialNumber')
         })
         .then(function (res) {
