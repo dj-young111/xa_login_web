@@ -181,7 +181,7 @@ export default {
     setTimeout(() => {
       getUkeyInfo().then(ukeyInfo => {
         if (ukeyInfo) {
-          ukeyInfo.uscc = ukeyInfo.uscc.substr(1)
+          ukeyInfo.uscc = ukeyInfo.uscc.length > 18 ? ukeyInfo.uscc.substr(1) : ukeyInfo.uscc
           this.UObject = ukeyInfo
           this.state.loginBtn = false
         } else {
@@ -219,7 +219,8 @@ export default {
           console.log(loginParams)
           getUkeyInfo().then(ukeyInfo => {
             console.log(ukeyInfo)
-            ukeyInfo.uscc = ukeyInfo.uscc.substr(1)
+            ukeyInfo.uscc = ukeyInfo.uscc.length > 18 ? ukeyInfo.uscc.substr(1) : ukeyInfo.uscc
+
             this.UObject = ukeyInfo
             var signSource = loginParams.loginName + loginParams.password + ukeyInfo.uscc
             console.log(signSource)
