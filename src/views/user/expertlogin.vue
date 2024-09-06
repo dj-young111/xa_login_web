@@ -31,6 +31,17 @@
           <a-icon slot="prefix" type="lock" :style="{ color: '#A1A1A1' }" />
         </a-input-password>
       </a-form-item>
+
+      <a-form-item>
+        <a-input
+          size="large"
+          type="text"
+          :placeholder="'统一社会信用代码'"
+          v-decorator="['uscc', {rules: [{ required: true, message: '请输入统一社会信用代码'}], validateTrigger: 'blur'}]">
+          <a-icon slot="prefix" type="user" :style="{ color: '#A1A1A1' }" />
+        </a-input>
+      </a-form-item>
+
       <a-form-item style="margin-top:24px">
         <a-button
           size="large"
@@ -51,7 +62,7 @@ import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import nmCryptokit from '@/utils/nmCryptoKit'
 import storage from 'store'
-import { expertLogin, checkIsLogin, getInfo, logout } from '@/api/login'
+import { expertLogin, checkIsLogin, getInfo, logout, getSmsCaptcha } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 let gt
@@ -72,8 +83,50 @@ export default {
         loginType: 0,
         smsSendBtn: false
       },
-      UObject: {}
+      UObject: {},
+      loginparams: {
+        loginName: '',
+        password: '',
+        uscc: ''
+      }
     }
+  },
+  created () {
+    initGeetest4({
+      captchaId: '6bd3a0e254936eec9549f95c1d45fde9',
+      product: 'bind'
+    }, (captchaObj) => {
+      gt = captchaObj
+      captchaObj.onSuccess(() => {
+        var result = captchaObj.getValidate()
+        console.log(result)
+        this.captchaResult = result
+        const {
+          form: { validateFields },
+          state,
+          customActiveKey,
+          loginparams
+        } = this
+        expertLogin({ uscc: this.loginparams.uscc, password: this.loginparams.password, loginName: this.loginparams.loginName, lotNumber: result.lot_number, captchaOutput: result.captcha_output, passToken: result.pass_token, genTime: result.gen_time }).then(response => {
+          if (response.status === -1) {
+            this.$notification['error']({
+              message: '错误',
+              description: response.message || '请求出现错误，请稍后再试',
+              duration: 4
+            })
+          } else {
+            const result = response.data
+            storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+            this.$store.commit('SET_TOKEN', result.token)
+            storage.set('name', result.mobile)
+            storage.set('loginName', result.loginName)
+            this.loginSuccess()
+          }
+        }).catch(error => {
+          // reject(error)
+        })
+      })
+    })
   },
   mounted () {
   },
@@ -90,7 +143,7 @@ export default {
         customActiveKey,
         Login
       } = this
-      const validateFieldsKey = ['loginName', 'password']
+      const validateFieldsKey = ['loginName', 'password', 'uscc']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
@@ -101,30 +154,10 @@ export default {
       })
     },
     goLogin (loginParams) {
-      const {
-        form: { validateFields },
-        state,
-        customActiveKey,
-        Login
-      } = this
-      expertLogin(loginParams).then(response => {
-        if (response.status === -1) {
-          this.$notification['error']({
-            message: '错误',
-            description: response.message || '请求出现错误，请稍后再试',
-            duration: 4
-          })
-        } else {
-          const result = response.data
-          storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
-          this.$store.commit('SET_TOKEN', result.token)
-          storage.set('name', result.mobile)
-          storage.set('loginName', result.loginName)
-          this.loginSuccess()
-        }
-      }).catch(error => {
-        // reject(error)
-      })
+      this.loginparams.uscc = loginParams.uscc
+      this.loginparams.loginName = loginParams.loginName
+      this.loginparams.password = loginParams.password
+      gt.showCaptcha()
     },
     getCaptcha (e) {
       e.preventDefault()

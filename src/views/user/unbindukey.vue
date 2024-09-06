@@ -1,18 +1,18 @@
 <template>
-  <div class='main user-layout-register'>
+  <div class="main user-layout-register">
     <h3><span>解绑U盾</span></h3>
-    <a-form ref='formRegister' :form='form' id='formRegister'>
+    <a-form ref="formRegister" :form="form" id="formRegister">
       <a-form-item>
         <a-input
-          size='large'
-          type='text'
+          size="large"
+          type="text"
           :placeholder="'登录名'"
           v-decorator="['loginName', {rules: [{ required: true, message: '请输入登录名'}], validateTrigger: 'blur'}]"
         ></a-input>
       </a-form-item>
       <a-form-item>
         <a-input
-          size='large'
+          size="large"
           :placeholder="UObject.cfcaKeyId ? 'U盾检测成功': 'U盾检测中'"
           disabled
         >
@@ -21,55 +21,58 @@
 
       <a-form-item>
         <a-input-password
-          size='large'
-          placeholder='密码'
+          size="large"
+          placeholder="密码"
           v-decorator="[
             'password',
             {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
           ]"
         >
-          <a-icon slot='prefix' type='lock' :style="{ color: '#A1A1A1' }" />
+          <a-icon slot="prefix" type="lock" :style="{ color: '#A1A1A1' }" />
         </a-input-password>
       </a-form-item>
       <a-form-item>
-        <a-input size='large' :placeholder="$t('user.login.mobile.placeholder')" v-model='phone' disabled>
+        <a-input size="large" :placeholder="$t('user.login.mobile.placeholder')" v-model="phone" disabled>
         </a-input>
       </a-form-item>
 
-      <a-row :gutter='16'>
-        <a-col class='gutter-row' :span='16'>
+      <a-row :gutter="16">
+        <a-col class="gutter-row" :span="16">
           <a-form-item>
-            <a-input size='large' type='text' :placeholder="$t('user.login.mobile.verification-code.placeholder')"
-                     v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
-              <a-icon slot='prefix' type='mail' :style="{ color: 'rgba(0,0,0,.25)' }" />
+            <a-input
+              size="large"
+              type="text"
+              :placeholder="$t('user.login.mobile.verification-code.placeholder')"
+              v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
+              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
         </a-col>
-        <a-col class='gutter-row' :span='8'>
+        <a-col class="gutter-row" :span="8">
           <a-button
-            class='getCaptcha'
-            size='large'
-            :disabled='state.smsSendBtn'
-            @click.stop.prevent='getCaptcha'
+            class="getCaptcha"
+            size="large"
+            :disabled="state.smsSendBtn"
+            @click.stop.prevent="getCaptcha"
             v-text="!state.smsSendBtn && $t('user.register.get-verification-code')||(state.time+' s')"></a-button>
         </a-col>
       </a-row>
 
       <a-form-item>
-        <div class='btns'>
+        <div class="btns">
           <a-button
-            size='large'
-            type='primary'
-            htmlType='submit'
-            class='register-button'
-            :loading='registerBtn'
-            @click.stop.prevent='handleSubmit'
-            :disabled='registerBtn'>确定
+            size="large"
+            type="primary"
+            htmlType="submit"
+            class="register-button"
+            :loading="registerBtn"
+            @click.stop.prevent="handleSubmit"
+            :disabled="registerBtn">确定
           </a-button>
           <a-button
-            size='large'
-            class='register-button'
-            @click='gologin'
+            size="large"
+            class="register-button"
+            @click="gologin"
           >取消
           </a-button>
         </div>
@@ -88,10 +91,10 @@ import nmCryptokit from '@/utils/nmCryptoKit'
 import { putUnBindUkey } from '@/api/clients'
 let gt
 export default {
-  name: 'unbindukey',
+  name: 'Unbindukey',
   components: {},
   mixins: [deviceMixin],
-  data() {
+  data () {
     return {
       form: this.$form.createForm(this),
 
@@ -109,7 +112,7 @@ export default {
       phone: ''
     }
   },
-  created() {
+  created () {
     initGeetest4({
       captchaId: '6bd3a0e254936eec9549f95c1d45fde9',
       product: 'bind'
@@ -158,7 +161,7 @@ export default {
       })
     })
   },
-  mounted() {
+  mounted () {
     checkBrowserUkeyCert()
 
     setTimeout(() => {
@@ -172,10 +175,10 @@ export default {
     }, 200)
   },
   methods: {
-    gologin() {
+    gologin () {
       this.$router.push({ name: 'login' })
     },
-    handlePasswordCheck(rule, value, callback) {
+    handlePasswordCheck (rule, value, callback) {
       const password = this.form.getFieldValue('password')
       // console.log('value', value)
       if (value === undefined) {
@@ -186,7 +189,7 @@ export default {
       }
       callback()
     },
-    handleSubmit() {
+    handleSubmit () {
       const { form: { validateFields }, state, $router } = this
       validateFields({ force: true }, (err, values) => {
         if (!err) {
@@ -220,9 +223,9 @@ export default {
       })
     },
 
-    getCaptcha(e) {
+    getCaptcha (e) {
       e.preventDefault()
-      const { form: { validateFields }, state, $message, $notification } = this
+      const { form: { validateFields }/*, state, $message, $notification */ } = this
 
       validateFields(['loginName'], { force: true },
         (err, values) => {
@@ -232,7 +235,7 @@ export default {
         }
       )
     },
-    requestFailed(err) {
+    requestFailed (err) {
       this.$notification['error']({
         message: '错误',
         description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
@@ -242,7 +245,7 @@ export default {
     }
   },
   watch: {
-    'state.passwordLevel'(val) {
+    'state.passwordLevel' (val) {
       console.log(val)
     }
   }
